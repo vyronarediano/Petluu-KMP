@@ -130,7 +130,7 @@ private fun HomeContent(
     onEvent: (PetListEvent) -> Unit,
     state: PetListState
 ) {
-    LazyColumn (
+    LazyColumn(
         modifier = Modifier.fillMaxSize(),
     ) {
         item {
@@ -139,7 +139,9 @@ private fun HomeContent(
 
                 AddHeaderSection(
                     headerTitle = "To take",
-                    onAddClick = { onEvent(PetListEvent.OnAddNewPetClick) },
+                    onAddClick = {
+                        //TODO onEvent OnSeeAllClick onEvent(PetListEvent.OnAddNewReminder)
+                    },
                     onSeeAllClick = {
                         //TODO onEvent OnSeeAllClick
                     }
