@@ -1,0 +1,47 @@
+CREATE TABLE petEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    species TEXT NOT NULL,
+    breed TEXT NOT NULL ,
+    gender TEXT,
+    color TEXT,
+    birthday TEXT,
+    weight INTEGER,
+    microchipNum TEXT,
+    microchipDate TEXT,
+    ownerId INTEGER,
+    createdAt INTEGER NOT NULL,
+    imagePath TEXT
+);
+
+getPets:
+SELECT *
+FROM petEntity
+ORDER BY createdAt DESC;
+
+insertPetEntity:
+INSERT OR REPLACE
+INTO petEntity(
+    id,
+    name,
+    species,
+    breed,
+    gender,
+    color,
+    birthday,
+    weight,
+    microchipNum,
+    microchipDate,
+    ownerId,
+    createdAt,
+    imagePath
+) VALUES (?, ?, ?, ?,?, ? ,?, ?, ?, ?, ?, ?, ?);
+
+deletePet:
+DELETE FROM petEntity
+WHERE id = :id;
+
+getPetById:
+SELECT *
+FROM petEntity
+WHERE id = :id;
