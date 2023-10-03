@@ -1,7 +1,7 @@
 package com.petluu.app
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,6 +15,7 @@ import com.petluu.app.feature_pets.presentation.PetListVM
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 
+@ExperimentalMaterial3Api
 @Composable
 fun App(
     darkTheme: Boolean,
