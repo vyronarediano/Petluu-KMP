@@ -1,4 +1,4 @@
-package com.petluu.app.feature_pets.presentation.components
+package com.petluu.app.feature_home.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,7 @@ import com.petluu.app.core.presentation.util.Dimens
 import com.petluu.app.core.presentation.util.Padding
 import com.petluu.app.core.presentation.util.Spacing
 import com.petluu.app.core.presentation.util.Spacing.All.heightModifier
-import com.petluu.app.feature_pets.domain.Pet
+import com.petluu.app.feature_home.domain.Pet
 import com.petluu.app.utils.AsyncImage
 
 /**

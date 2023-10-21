@@ -1,4 +1,4 @@
-package com.petluu.app.feature_pets.presentation.components
+package com.petluu.app.feature_home.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,14 +35,14 @@ import com.petluu.app.core.presentation.util.Dimens
 import com.petluu.app.core.presentation.util.Padding
 import com.petluu.app.core.presentation.util.Spacing
 import com.petluu.app.core.presentation.util.Spacing.All.heightModifier
-import com.petluu.app.feature_pets.domain.Pet
-import com.petluu.app.feature_pets.presentation.PetListEvent
+import com.petluu.app.feature_home.domain.Pet
+import com.petluu.app.feature_home.presentation.HomeEvent
 
 @Composable
 fun PetDetailSheet(
     isOpen: Boolean,
     selectedPet: Pet?,
-    onEvent: (PetListEvent) -> Unit,
+    onEvent: (HomeEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BottomSheetFromWish(
@@ -76,11 +75,11 @@ fun PetDetailSheet(
                 EditRow(
                     onEditClick = {
                         selectedPet?.let {
-                            onEvent(PetListEvent.EditPet(it))
+                            onEvent(HomeEvent.EditPet(it))
                         }
                     },
                     onDeleteClick = {
-                        onEvent(PetListEvent.DeletePet)
+                        onEvent(HomeEvent.DeletePet)
                     }
                 )
                 Spacer(Spacing.Vertical.MD.heightModifier)
@@ -112,7 +111,7 @@ fun PetDetailSheet(
 
             IconButton(
                 onClick = {
-                    onEvent(PetListEvent.DismissPet)
+                    onEvent(HomeEvent.DismissPet)
                 }
             ) {
                 Icon(

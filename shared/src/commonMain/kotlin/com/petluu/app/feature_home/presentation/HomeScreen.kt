@@ -1,4 +1,4 @@
-package com.petluu.app.feature_pets.presentation
+package com.petluu.app.feature_home.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,12 +37,12 @@ import com.petluu.app.core.presentation.util.Dimens
 import com.petluu.app.core.presentation.util.Padding
 import com.petluu.app.core.presentation.util.Spacing
 import com.petluu.app.core.presentation.util.Spacing.Vertical.heightModifier
-import com.petluu.app.feature_pets.domain.Pet
-import com.petluu.app.feature_pets.domain.Reminder
-import com.petluu.app.feature_pets.presentation.components.AddPetSheet
-import com.petluu.app.feature_pets.presentation.components.PetDetailSheet
-import com.petluu.app.feature_pets.presentation.components.PetListItem
-import com.petluu.app.feature_pets.presentation.components.ReminderListItem
+import com.petluu.app.feature_home.domain.Pet
+import com.petluu.app.feature_home.domain.Reminder
+import com.petluu.app.feature_home.presentation.components.AddPetSheet
+import com.petluu.app.feature_home.presentation.components.PetDetailSheet
+import com.petluu.app.feature_home.presentation.components.PetListItem
+import com.petluu.app.feature_home.presentation.components.ReminderListItem
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -53,14 +53,14 @@ import kotlinx.datetime.toLocalDateTime
  */
 @ExperimentalMaterial3Api
 @Composable
-fun PetListScreen(
-    state: PetListState,
+fun HomeScreen(
+    state: HomeState,
     newPet: Pet?,
-    onEvent: (PetListEvent) -> Unit,
+    onEvent: (HomeEvent) -> Unit,
     imagePicker: ImagePicker
 ) {
     imagePicker.registerPicker { imageBytes ->
-        onEvent(PetListEvent.OnPhotoPicked(imageBytes))
+        onEvent(HomeEvent.OnPhotoPicked(imageBytes))
     }
 
     Scaffold(
@@ -90,7 +90,7 @@ fun PetListScreen(
         newPet = newPet,
         isOpen = state.isAddPetSheetOpen,
         onEvent = { event ->
-            if (event is PetListEvent.OnAddPhotoClicked) {
+            if (event is HomeEvent.OnAddPhotoClicked) {
                 imagePicker.pickImage()
             }
             onEvent(event)
@@ -127,8 +127,8 @@ private fun GreetingNameSection() {
 @Composable
 private fun HomeContent(
     modifier: Modifier = Modifier,
-    onEvent: (PetListEvent) -> Unit,
-    state: PetListState
+    onEvent: (HomeEvent) -> Unit,
+    state: HomeState
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -162,13 +162,13 @@ private fun HomeContent(
 @ExperimentalMaterial3Api
 @Composable
 private fun PetListSection(
-    onEvent: (PetListEvent) -> Unit,
+    onEvent: (HomeEvent) -> Unit,
     modifier: Modifier,
-    state: PetListState
+    state: HomeState
 ) {
     AddHeaderSection(
         headerTitle = "Your pets",
-        onAddClick = { onEvent(PetListEvent.OnAddNewPetClick) },
+        onAddClick = { onEvent(HomeEvent.OnAddNewPetClick) },
         onSeeAllClick = {
             //TODO onEvent OnSeeAllClick
         }
@@ -188,7 +188,7 @@ private fun PetListSection(
                 pet = pet,
                 modifier = Modifier.width(160.dp),
                 onClick = {
-                    onEvent(PetListEvent.SelectPet(pet))
+                    onEvent(HomeEvent.SelectPet(pet))
                 }
             )
         }

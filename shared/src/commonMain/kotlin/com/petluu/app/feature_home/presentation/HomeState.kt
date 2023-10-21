@@ -1,12 +1,12 @@
-package com.petluu.app.feature_pets.presentation
+package com.petluu.app.feature_home.presentation
 
-import com.petluu.app.feature_pets.domain.Pet
+import com.petluu.app.feature_home.domain.Pet
 
 /**
  * @author Cedierick Vyron Arediano
  * @since 1.0.0
  */
-data class PetListState(
+data class HomeState(
     val pets: List<Pet> = emptyList(),
     val selectedPet: Pet? = null,
     val isAddPetSheetOpen: Boolean = false,

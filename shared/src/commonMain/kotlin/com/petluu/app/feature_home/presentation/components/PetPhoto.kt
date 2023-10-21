@@ -1,4 +1,4 @@
-package com.petluu.app.feature_pets.presentation.components
+package com.petluu.app.feature_home.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.petluu.app.core.presentation.rememberBitmapFromBytes
-import com.petluu.app.feature_pets.domain.Pet
+import com.petluu.app.feature_home.domain.Pet
 
 /**
  * @author Cedierick Vyron Arediano

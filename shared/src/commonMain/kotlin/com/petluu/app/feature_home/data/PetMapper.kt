@@ -1,8 +1,8 @@
-package com.petluu.app.feature_pets.data
+package com.petluu.app.feature_home.data
 
 import com.petluu.app.core.data.ImageStorage
-import com.petluu.app.feature_pets.domain.Gender
-import com.petluu.app.feature_pets.domain.Pet
+import com.petluu.app.feature_home.domain.Gender
+import com.petluu.app.feature_home.domain.Pet
 import database.PetEntity
 
 suspend fun PetEntity.toPet(imageStorage: ImageStorage): Pet {

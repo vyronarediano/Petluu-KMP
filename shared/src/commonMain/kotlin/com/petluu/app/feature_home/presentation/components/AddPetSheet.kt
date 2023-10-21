@@ -1,4 +1,4 @@
-package com.petluu.app.feature_pets.presentation.components
+package com.petluu.app.feature_home.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,21 +25,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
 import com.petluu.app.core.presentation.BottomSheetFromWish
 import com.petluu.app.core.presentation.util.Spacing
 import com.petluu.app.core.presentation.util.Spacing.All.heightModifier
-import com.petluu.app.feature_pets.domain.Pet
-import com.petluu.app.feature_pets.presentation.PetListEvent
-import com.petluu.app.feature_pets.presentation.PetListState
+import com.petluu.app.feature_home.domain.Pet
+import com.petluu.app.feature_home.presentation.HomeEvent
+import com.petluu.app.feature_home.presentation.HomeState
 
 @Composable
 fun AddPetSheet(
-    state: PetListState,
+    state: HomeState,
     newPet: Pet?,
     isOpen: Boolean,
-    onEvent: (PetListEvent) -> Unit,
+    onEvent: (HomeEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BottomSheetFromWish(
@@ -62,7 +61,7 @@ fun AddPetSheet(
                             .clip(RoundedCornerShape(40))
                             .background(MaterialTheme.colorScheme.secondaryContainer)
                             .clickable {
-                                onEvent(PetListEvent.OnAddPhotoClicked)
+                                onEvent(HomeEvent.OnAddPhotoClicked)
                             }
                             .border(
                                 width = 1.dp,
@@ -84,7 +83,7 @@ fun AddPetSheet(
                         modifier = Modifier
                             .size(150.dp)
                             .clickable {
-                                onEvent(PetListEvent.OnAddPhotoClicked)
+                                onEvent(HomeEvent.OnAddPhotoClicked)
                             }
                     )
                 }
@@ -94,7 +93,7 @@ fun AddPetSheet(
                     placeholder = "Name",
                     error = state.nameError,
                     onValueChanged = {
-                        onEvent(PetListEvent.OnNameChanged(it))
+                        onEvent(HomeEvent.OnNameChanged(it))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -104,7 +103,7 @@ fun AddPetSheet(
                     placeholder = "Species",
                     error = state.speciesError,
                     onValueChanged = {
-                        onEvent(PetListEvent.OnSpeciesChanged(it))
+                        onEvent(HomeEvent.OnSpeciesChanged(it))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -114,7 +113,7 @@ fun AddPetSheet(
                     placeholder = "Breed",
                     error = state.breedError,
                     onValueChanged = {
-                        onEvent(PetListEvent.OnBreedChanged(it))
+                        onEvent(HomeEvent.OnBreedChanged(it))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -125,14 +124,14 @@ fun AddPetSheet(
                     placeholder = "Gender",
                     error = null,
                     onValueChanged = {
-                        onEvent(PetListEvent.OnGenderChanged(it))
+                        onEvent(HomeEvent.OnGenderChanged(it))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        onEvent(PetListEvent.SavePet)
+                        onEvent(HomeEvent.SavePet)
                     }
                 ) {
                     Text(text = "Save")
@@ -140,7 +139,7 @@ fun AddPetSheet(
             }
             IconButton(
                 onClick = {
-                    onEvent(PetListEvent.DismissPet)
+                    onEvent(HomeEvent.DismissPet)
                 }
             ) {
                 Icon(

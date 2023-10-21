@@ -1,4 +1,4 @@
-package com.petluu.app.feature_pets.domain
+package com.petluu.app.feature_home.domain
 
 data class Reminder(
     val id: Long,

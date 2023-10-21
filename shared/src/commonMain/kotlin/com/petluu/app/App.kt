@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import com.petluu.app.core.presentation.ImagePicker
 import com.petluu.app.core.presentation.PetluuTheme
 import com.petluu.app.di.AppModule
-import com.petluu.app.feature_pets.presentation.PetListScreen
-import com.petluu.app.feature_pets.presentation.PetListVM
+import com.petluu.app.feature_home.presentation.HomeScreen
+import com.petluu.app.feature_home.presentation.HomeVM
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 
@@ -30,14 +30,14 @@ fun App(
         val viewModel = getViewModel(
             key = "pet-list-screen",
             factory = viewModelFactory {
-                PetListVM(appModule.petDataSource)
+                HomeVM(appModule.petDataSource)
             }
         )
         val state by viewModel.state.collectAsState()
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            PetListScreen(
+            HomeScreen(
                 state = state,
                 newPet = viewModel.newPet,
                 onEvent = viewModel::onEvent,

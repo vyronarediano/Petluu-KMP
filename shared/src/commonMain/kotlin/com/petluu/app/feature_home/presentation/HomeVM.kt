@@ -1,12 +1,11 @@
-package com.petluu.app.feature_pets.presentation
+package com.petluu.app.feature_home.presentation
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.petluu.app.feature_pets.domain.Gender
-import com.petluu.app.feature_pets.domain.Pet
-import com.petluu.app.feature_pets.domain.PetDataSource
-import com.petluu.app.feature_pets.domain.PetValidator
+import com.petluu.app.feature_home.domain.Pet
+import com.petluu.app.feature_home.domain.PetDataSource
+import com.petluu.app.feature_home.domain.PetValidator
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,11 +19,11 @@ import kotlinx.coroutines.launch
  * @author Cedierick Vyron Arediano
  * @since 1.0.0
  */
-class PetListVM(
+class HomeVM(
     private val petDataSource: PetDataSource
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(PetListState())
+    private val _state = MutableStateFlow(HomeState())
     val state = combine(
         _state,
         petDataSource.getPets()
@@ -32,14 +31,14 @@ class PetListVM(
         state.copy(
             pets = pets,
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), PetListState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), HomeState())
 
     var newPet: Pet? by mutableStateOf(null)
         private set
 
-    fun onEvent(event: PetListEvent) {
+    fun onEvent(event: HomeEvent) {
         when (event) {
-            PetListEvent.OnAddNewPetClick -> {
+            HomeEvent.OnAddNewPetClick -> {
                 _state.update {
                     it.copy(
                         isAddPetSheetOpen = true
@@ -62,7 +61,7 @@ class PetListVM(
                 )
             }
 
-            PetListEvent.DismissPet -> {
+            HomeEvent.DismissPet -> {
                 viewModelScope.launch {
                     _state.update { it.copy(
                         isSelectedPetSheetOpen = false,
@@ -81,7 +80,7 @@ class PetListVM(
                 }
             }
 
-            PetListEvent.SavePet -> {
+            HomeEvent.SavePet -> {
                 newPet?.let { pet ->
                     val result = PetValidator.validatePet(pet)
                     val errors = listOfNotNull(
@@ -119,7 +118,7 @@ class PetListVM(
                 }
             }
 
-            is PetListEvent.EditPet -> {
+            is HomeEvent.EditPet -> {
                 _state.update {
                     it.copy(
                         selectedPet = null,
@@ -130,7 +129,7 @@ class PetListVM(
                 newPet = event.pet
             }
 
-            PetListEvent.DeletePet -> {
+            HomeEvent.DeletePet -> {
                 viewModelScope.launch {
                     _state.value.selectedPet?.id?.let { petId ->
                         _state.update {
@@ -149,7 +148,7 @@ class PetListVM(
                 }
             }
 
-            is PetListEvent.SelectPet -> {
+            is HomeEvent.SelectPet -> {
                 _state.update {
                     it.copy(
                         selectedPet = event.pet,
@@ -158,39 +157,39 @@ class PetListVM(
                 }
             }
 
-            is PetListEvent.OnNameChanged -> {
+            is HomeEvent.OnNameChanged -> {
                 newPet = newPet?.copy(name = event.value)
             }
 
-            is PetListEvent.OnSpeciesChanged -> {
+            is HomeEvent.OnSpeciesChanged -> {
                 newPet = newPet?.copy(species = event.value)
             }
 
-            is PetListEvent.OnBreedChanged -> {
+            is HomeEvent.OnBreedChanged -> {
                 newPet = newPet?.copy(breed = event.value)
             }
 
-            is PetListEvent.OnGenderChanged -> {
+            is HomeEvent.OnGenderChanged -> {
                 //newPet = newPet?.copy(gender = Gender.valueOf(event.value.uppercase()))
             }
 
-            is PetListEvent.OnColorChanged -> {
+            is HomeEvent.OnColorChanged -> {
                 newPet = newPet?.copy(color = event.value)
             }
 
-            is PetListEvent.OnBirthdayChanged -> {
+            is HomeEvent.OnBirthdayChanged -> {
                 newPet = newPet?.copy(birthday = event.value)
             }
 
-            is PetListEvent.OnMicrochipNumChanged -> {
+            is HomeEvent.OnMicrochipNumChanged -> {
                 newPet = newPet?.copy(microchipNum = event.value)
             }
 
-            is PetListEvent.OnMicrochipDateChanged -> {
+            is HomeEvent.OnMicrochipDateChanged -> {
                 newPet = newPet?.copy(microchipDate = event.value)
             }
 
-            is PetListEvent.OnPhotoPicked -> {
+            is HomeEvent.OnPhotoPicked -> {
                 newPet = newPet?.copy(photoBytes = event.bytes)
             }
 
