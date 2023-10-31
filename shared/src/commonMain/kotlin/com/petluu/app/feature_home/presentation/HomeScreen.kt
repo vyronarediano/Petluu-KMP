@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,9 +36,7 @@ import com.petluu.app.core.presentation.util.Dimens
 import com.petluu.app.core.presentation.util.Padding
 import com.petluu.app.core.presentation.util.Spacing
 import com.petluu.app.core.presentation.util.Spacing.Vertical.heightModifier
-import com.petluu.app.feature_home.domain.Pet
 import com.petluu.app.feature_home.domain.Reminder
-import com.petluu.app.feature_home.presentation.components.AddPetSheet
 import com.petluu.app.feature_home.presentation.components.PetListItem
 import com.petluu.app.feature_home.presentation.components.ReminderListItem
 import kotlinx.datetime.Clock
@@ -50,9 +47,10 @@ import kotlinx.datetime.toLocalDateTime
  * @author Cedierick Vyron Arediano
  * @since 1.0.0
  */
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    paddingValues: PaddingValues,
     state: HomeState,
     onEvent: (HomeEvent) -> Unit,
     imagePicker: ImagePicker,
@@ -65,24 +63,47 @@ fun HomeScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
+    ) { _ ->
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding())
         ) {
-            GreetingNameSection()
+            item {
+                GreetingNameSection()
 
-            Spacer(Spacing.Vertical.MD.heightModifier)
+                Spacer(Spacing.Vertical.MD.heightModifier)
 
-            HomeContent(
-                modifier = Modifier.fillMaxWidth(),
-                onEvent = onEvent,
-                state = state,
-                onPetSelected = onPetSelected,
-                onAddNewPetClick = onAddNewPetClick
+                PetListSection(
+                    onEvent,
+                    Modifier.fillMaxWidth(),
+                    state,
+                    onPetSelected,
+                    onAddNewPetClick
+                )
+
+                AddHeaderSection(
+                    headerTitle = "To take",
+                    onAddClick = {
+                        //TODO onEvent OnSeeAllClick onEvent(PetListEvent.OnAddNewReminder)
+                    },
+                    onSeeAllClick = {
+                        //TODO onEvent OnSeeAllClick
+                    }
+                )
+            }
+
+            val hardcodedReminders = listOf(
+                Reminder(1, "NextGard Spectra 30-40kg", 0, "Flea & tick treatment", "Bron"),
+                Reminder(2, "4 in 1 Vaccine", 0, "Vaccination", "Coby"),
+                Reminder(3, "Deworming", 0, "Deworming", "Coby"),
+                Reminder(4, "Flea & tick treatment", 0, "Flea & tick treatment", "Coby"),
             )
-
-            Spacer(Spacing.Vertical.MD.heightModifier)
+            items(hardcodedReminders) { reminder ->
+                ReminderListItem(reminder = reminder)
+            }
         }
+
+        Spacer(Spacing.Vertical.MD.heightModifier)
     }
 }
 
@@ -107,44 +128,6 @@ private fun GreetingNameSection() {
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Start
         )
-    }
-}
-
-@ExperimentalMaterial3Api
-@Composable
-private fun HomeContent(
-    modifier: Modifier = Modifier,
-    onEvent: (HomeEvent) -> Unit,
-    state: HomeState,
-    onPetSelected: () -> Unit,
-    onAddNewPetClick: () -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        item {
-            Column {
-                PetListSection(onEvent, modifier, state, onPetSelected, onAddNewPetClick)
-
-                AddHeaderSection(
-                    headerTitle = "To take",
-                    onAddClick = {
-                        //TODO onEvent OnSeeAllClick onEvent(PetListEvent.OnAddNewReminder)
-                    },
-                    onSeeAllClick = {
-                        //TODO onEvent OnSeeAllClick
-                    }
-                )
-            }
-        }
-
-        val hardcodedReminders = listOf(
-            Reminder(1, "NextGard Spectra 30-40kg", 0, "Flea & tick treatment", "Bron"),
-            Reminder(2, "4 in 1 Vaccine", 0, "Vaccination", "Coby")
-        )
-        items(hardcodedReminders) { reminder ->
-            ReminderListItem(reminder = reminder)
-        }
     }
 }
 

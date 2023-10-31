@@ -49,7 +49,6 @@ import kotlinx.coroutines.launch
     ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
     ExperimentalMaterialApi::class
 )
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
     val navController = rememberAnimatedNavController()
@@ -83,7 +82,7 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
     ) {
         Scaffold(
             bottomBar = { BottomNavigation(navController) }
-        ) { _ ->
+        ) { paddingValues ->
             AnimatedNavHost(
                 navController = navController,
                 startDestination = Screen.Home.route,
@@ -125,6 +124,7 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
                     }
                 ) {
                     HomeScreen(
+                        paddingValues = paddingValues,
                         state = state,
                         imagePicker = imagePicker,
                         onEvent = viewModel::onEvent,
