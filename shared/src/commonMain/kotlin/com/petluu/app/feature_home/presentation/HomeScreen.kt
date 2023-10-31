@@ -40,7 +40,6 @@ import com.petluu.app.core.presentation.util.Spacing.Vertical.heightModifier
 import com.petluu.app.feature_home.domain.Pet
 import com.petluu.app.feature_home.domain.Reminder
 import com.petluu.app.feature_home.presentation.components.AddPetSheet
-import com.petluu.app.feature_home.presentation.components.PetDetailSheet
 import com.petluu.app.feature_home.presentation.components.PetListItem
 import com.petluu.app.feature_home.presentation.components.ReminderListItem
 import kotlinx.datetime.Clock
@@ -57,7 +56,8 @@ fun HomeScreen(
     state: HomeState,
     newPet: Pet?,
     onEvent: (HomeEvent) -> Unit,
-    imagePicker: ImagePicker
+    imagePicker: ImagePicker,
+    onPetSelected: () -> Unit
 ) {
     imagePicker.registerPicker { imageBytes ->
         onEvent(HomeEvent.OnPhotoPicked(imageBytes))
@@ -73,17 +73,16 @@ fun HomeScreen(
 
             Spacer(Spacing.Vertical.MD.heightModifier)
 
-            HomeContent(modifier = Modifier.fillMaxWidth(), onEvent, state)
+            HomeContent(
+                modifier = Modifier.fillMaxWidth(),
+                onEvent = onEvent,
+                state = state,
+                onPetSelected = onPetSelected
+            )
 
             Spacer(Spacing.Vertical.MD.heightModifier)
         }
     }
-
-    PetDetailSheet(
-        isOpen = state.isSelectedPetSheetOpen,
-        selectedPet = state.selectedPet,
-        onEvent = onEvent
-    )
 
     AddPetSheet(
         state = state,
@@ -128,14 +127,15 @@ private fun GreetingNameSection() {
 private fun HomeContent(
     modifier: Modifier = Modifier,
     onEvent: (HomeEvent) -> Unit,
-    state: HomeState
+    state: HomeState,
+    onPetSelected: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
     ) {
         item {
             Column {
-                PetListSection(onEvent, modifier, state)
+                PetListSection(onEvent, modifier, state, onPetSelected)
 
                 AddHeaderSection(
                     headerTitle = "To take",
@@ -164,7 +164,8 @@ private fun HomeContent(
 private fun PetListSection(
     onEvent: (HomeEvent) -> Unit,
     modifier: Modifier,
-    state: HomeState
+    state: HomeState,
+    onPetSelected: () -> Unit
 ) {
     AddHeaderSection(
         headerTitle = "Your pets",
@@ -189,6 +190,8 @@ private fun PetListSection(
                 modifier = Modifier.width(160.dp),
                 onClick = {
                     onEvent(HomeEvent.SelectPet(pet))
+
+                    onPetSelected()
                 }
             )
         }

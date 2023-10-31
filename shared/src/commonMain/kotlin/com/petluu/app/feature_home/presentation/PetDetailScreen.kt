@@ -1,4 +1,4 @@
-package com.petluu.app.feature_home.presentation.components
+package com.petluu.app.feature_home.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -6,22 +6,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,29 +33,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.petluu.app.core.presentation.BottomSheetFromWish
 import com.petluu.app.core.presentation.util.Dimens
 import com.petluu.app.core.presentation.util.Padding
 import com.petluu.app.core.presentation.util.Spacing
 import com.petluu.app.core.presentation.util.Spacing.All.heightModifier
 import com.petluu.app.feature_home.domain.Pet
-import com.petluu.app.feature_home.presentation.HomeEvent
+import com.petluu.app.feature_home.presentation.components.PetPhoto
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PetDetailSheet(
-    isOpen: Boolean,
-    selectedPet: Pet?,
-    onEvent: (HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+fun PetDetailScreen(
+    viewModel: HomeVM,
+    onEditPetClick: (Pet) -> Unit,
+    onDeletePetClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
-    BottomSheetFromWish(
-        visible = isOpen,
-        modifier = modifier.fillMaxWidth()
+    val selectedPet = viewModel.state.value.selectedPet
+
+    Scaffold(
+        topBar = {
+            PetDetailTopAppBar(onBackClick)
+        }
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopStart
-        ) {
+        selectedPet?.let { pet ->
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -65,7 +68,7 @@ fun PetDetailSheet(
                 )
                 Spacer(Spacing.Vertical.MD.heightModifier)
                 Text(
-                    text = "${selectedPet?.name}",
+                    text = pet.name,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                     fontWeight = FontWeight.Bold,
@@ -74,12 +77,10 @@ fun PetDetailSheet(
                 Spacer(Spacing.Vertical.MD.heightModifier)
                 EditRow(
                     onEditClick = {
-                        selectedPet?.let {
-                            onEvent(HomeEvent.EditPet(it))
-                        }
+                        onEditPetClick(pet)
                     },
                     onDeleteClick = {
-                        onEvent(HomeEvent.DeletePet)
+                        onDeletePetClick()
                     }
                 )
                 Spacer(Spacing.Vertical.MD.heightModifier)
@@ -98,26 +99,15 @@ fun PetDetailSheet(
                     val unitsOfWeight = listOf("lg", "kg")
                     PetInfo(
                         modifier = Modifier.weight(1f),
-                        petInfoValue = "${selectedPet?.weight} ${unitsOfWeight.first()}",
+                        petInfoValue = "${pet.weight} ${unitsOfWeight.first()}",
                         helperLabel = "Weight"
                     )
                     PetInfo(
                         modifier = Modifier.weight(1f),
-                        petInfoValue = selectedPet?.gender?.name?.lowercase()?.capitalize().orEmpty(),
+                        petInfoValue = pet.gender?.name?.lowercase()?.capitalize().orEmpty(),
                         helperLabel = "Gender"
                     )
                 }
-            }
-
-            IconButton(
-                onClick = {
-                    onEvent(HomeEvent.DismissPet)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = "Close"
-                )
             }
         }
     }
@@ -193,4 +183,26 @@ private fun EditRow(
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PetDetailTopAppBar(
+    onBackButtonClicked: () -> Unit
+) {
+    TopAppBar(
+        title = { },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background
+        ),
+        navigationIcon = {
+            IconButton(onClick = { onBackButtonClicked() }) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBackIos,
+                    contentDescription = "Back icon"
+                )
+            }
+        },
+        actions = {}
+    )
 }

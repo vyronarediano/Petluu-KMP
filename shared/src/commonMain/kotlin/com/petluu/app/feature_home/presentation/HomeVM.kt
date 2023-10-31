@@ -10,6 +10,7 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -64,7 +65,7 @@ class HomeVM(
             HomeEvent.DismissPet -> {
                 viewModelScope.launch {
                     _state.update { it.copy(
-                        isSelectedPetSheetOpen = false,
+                        isPetSelected = false,
                         isAddPetSheetOpen = false,
                         nameError = null,
                         speciesError = null,
@@ -123,7 +124,7 @@ class HomeVM(
                     it.copy(
                         selectedPet = null,
                         isAddPetSheetOpen = true,
-                        isSelectedPetSheetOpen = false
+                        isPetSelected = false
                     )
                 }
                 newPet = event.pet
@@ -134,7 +135,7 @@ class HomeVM(
                     _state.value.selectedPet?.id?.let { petId ->
                         _state.update {
                             it.copy(
-                                isSelectedPetSheetOpen = false
+                                isPetSelected = false
                             )
                         }
                         petDataSource.deletePet(petId)
@@ -152,7 +153,7 @@ class HomeVM(
                 _state.update {
                     it.copy(
                         selectedPet = event.pet,
-                        isSelectedPetSheetOpen = true
+                        isPetSelected = true
                     )
                 }
             }
