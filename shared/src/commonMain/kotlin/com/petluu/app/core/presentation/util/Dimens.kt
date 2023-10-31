@@ -8,6 +8,8 @@ sealed class Dimens {
 
         val addPetBtnSize = 38.dp
 
+        val backBtnSize = 45.dp
+
     }
 
     object TextField : Dimens() {

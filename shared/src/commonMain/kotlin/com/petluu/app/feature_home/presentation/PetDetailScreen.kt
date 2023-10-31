@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIos
@@ -29,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +41,7 @@ import com.petluu.app.core.presentation.util.Padding
 import com.petluu.app.core.presentation.util.Spacing
 import com.petluu.app.core.presentation.util.Spacing.All.heightModifier
 import com.petluu.app.feature_home.domain.Pet
+import com.petluu.app.feature_home.presentation.components.PetCoverPhoto
 import com.petluu.app.feature_home.presentation.components.PetPhoto
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,60 +58,89 @@ fun PetDetailScreen(
         topBar = {
             PetDetailTopAppBar(onBackClick)
         }
-    ) {
+    ) { paddingValues ->
         selectedPet?.let { pet ->
-            Column(
+            LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
+                //contentPadding = PaddingValues(top = paddingValues.calculateTopPadding()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(Modifier.height(60.dp))
-                PetPhoto(
-                    pet = selectedPet,
-                    iconSize = 50.dp,
-                    modifier = Modifier.size(150.dp)
-                )
-                Spacer(Spacing.Vertical.MD.heightModifier)
-                Text(
-                    text = pet.name,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp
-                )
-                Spacer(Spacing.Vertical.MD.heightModifier)
-                EditRow(
-                    onEditClick = {
-                        onEditPetClick(pet)
-                    },
-                    onDeleteClick = {
-                        onDeletePetClick()
-                    }
-                )
-                Spacer(Spacing.Vertical.MD.heightModifier)
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = Padding.Horizontal.XS),
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.Horizontal.MD),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    PetInfo(
-                        modifier = Modifier.weight(1f),
-                        petInfoValue = "6 years",
-                        helperLabel = "Age"
-                    )
+                item {
+                    Column {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Column {
+                                PetCoverPhoto(
+                                    modifier = Modifier.height(140.dp).fillMaxWidth(),
+                                    pet = selectedPet,
+                                    backgroundEmptyColor = MaterialTheme.colorScheme.outline,
+                                    iconSize = 50.dp
+                                )
 
-                    //TODO Harcoded for now
-                    val unitsOfWeight = listOf("lg", "kg")
-                    PetInfo(
-                        modifier = Modifier.weight(1f),
-                        petInfoValue = "${pet.weight} ${unitsOfWeight.first()}",
-                        helperLabel = "Weight"
-                    )
-                    PetInfo(
-                        modifier = Modifier.weight(1f),
-                        petInfoValue = pet.gender?.name?.lowercase()?.capitalize().orEmpty(),
-                        helperLabel = "Gender"
-                    )
+                                Spacer(Spacing.Vertical.SM.heightModifier)
+
+                                EditRow(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = Padding.Horizontal.MD),
+                                    onEditClick = {
+                                        onEditPetClick(pet)
+                                    },
+                                    onDeleteClick = {
+                                        onDeletePetClick()
+                                    }
+                                )
+                            }
+
+                            Box(modifier = Modifier.padding(top = 100.dp)) {
+                                PetPhoto(
+                                    pet = selectedPet,
+                                    iconSize = 50.dp,
+                                    modifier = Modifier
+                                        .padding(start = Padding.Horizontal.MD)
+                                        .size(100.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(Spacing.Vertical.MD.heightModifier)
+
+                        Text(
+                            text = pet.name,
+                            modifier = Modifier.padding(horizontal = Padding.Horizontal.MD + Padding.Horizontal.XS),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 30.sp
+                        )
+                    }
+
+                    Spacer(Spacing.Vertical.MD.heightModifier)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = Padding.Horizontal.XS),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.Horizontal.MD),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        PetInfo(
+                            modifier = Modifier.weight(1f),
+                            petInfoValue = "6 years",
+                            helperLabel = "Age"
+                        )
+
+                        //TODO Harcoded for now
+                        val unitsOfWeight = listOf("lg", "kg")
+                        PetInfo(
+                            modifier = Modifier.weight(1f),
+                            petInfoValue = "${pet.weight} ${unitsOfWeight.first()}",
+                            helperLabel = "Weight"
+                        )
+                        PetInfo(
+                            modifier = Modifier.weight(1f),
+                            petInfoValue = pet.gender?.name?.lowercase()?.capitalize().orEmpty(),
+                            helperLabel = "Gender"
+                        )
+                    }
                 }
+
             }
         }
     }
@@ -157,7 +190,7 @@ private fun EditRow(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier) {
+    Row(modifier, horizontalArrangement = Arrangement.End) {
         FilledTonalIconButton(
             onClick = onEditClick,
             colors = IconButtonDefaults.filledTonalIconButtonColors(
@@ -193,10 +226,18 @@ fun PetDetailTopAppBar(
     TopAppBar(
         title = { },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = Color.Transparent
         ),
         navigationIcon = {
-            IconButton(onClick = { onBackButtonClicked() }) {
+            IconButton(
+                onClick = { onBackButtonClicked() },
+                modifier = Modifier
+                    .padding(horizontal = Padding.Horizontal.SM)
+                    .background(
+                        color = Color.Black.copy(alpha = 0.05f),
+                        shape = CircleShape
+                    )
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.ArrowBackIos,
                     contentDescription = "Back icon"

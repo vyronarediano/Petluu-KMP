@@ -1,6 +1,5 @@
 package com.petluu.app.ui.navigation
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -29,11 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -51,6 +51,12 @@ import kotlinx.coroutines.launch
 )
 @Composable
 actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
+
+    /**
+     * TODO Implement Nav Graph to be able to fix the backstack when accessing PetDetail screen and navigate to setting nav bar and goes back to home,
+     * TODO it should retain the state if PetDetail screen
+     */
+
     val navController = rememberAnimatedNavController()
     val state by viewModel.state.collectAsState()
 
@@ -58,7 +64,7 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
     val skipHalfExpanded by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
+        skipHalfExpanded = skipHalfExpanded
     )
 
     ModalBottomSheetLayout(
@@ -81,7 +87,7 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
         }
     ) {
         Scaffold(
-            bottomBar = { BottomNavigation(navController) }
+            bottomBar = { BottomBarNav(navController) }
         ) { paddingValues ->
             AnimatedNavHost(
                 navController = navController,
@@ -183,7 +189,7 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
                         onDeletePetClick = {
 
                         },
-                        onBackClick = { navController.popBackStack() }
+                        onBackClick = { navController.navigateUp() }
                     )
                 }
 
@@ -241,26 +247,29 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigation(navController: NavController) {
-    val navigationItems = listOf(
+fun BottomBarNav(navController: NavHostController) {
+    val screens = listOf(
         BottomNavigationItem.Home,
         BottomNavigationItem.Settings
     )
-    var selectedItemIndex by rememberSaveable {
-        mutableStateOf(0)
-    }
-    NavigationBar {
-        navigationItems.forEachIndexed { index, item ->
-            NavigationBarItem(
-                selected = selectedItemIndex == index,
-                onClick = {
-                    selectedItemIndex = index
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
-                    navController.navigate(item.route)
+    NavigationBar {
+        screens.forEachIndexed { _, screen ->
+            val backStackEntry = navController.currentBackStackEntryAsState()
+            val selected = screen.route == backStackEntry.value?.destination?.route
+            NavigationBarItem(
+                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                onClick = {
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id)
+                        launchSingleTop = true
+                    }
                 },
                 label = {
                     Text(
-                        text = item.title,
+                        text = screen.title,
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
@@ -269,20 +278,20 @@ fun BottomNavigation(navController: NavController) {
                 icon = {
                     BadgedBox(
                         badge = {
-                            if (item.badgeCount != null) {
+                            if (screen.badgeCount != null) {
                                 Badge {
-                                    Text(text = item.badgeCount.toString())
+                                    Text(text = screen.badgeCount.toString())
                                 }
-                            } else if (item.hasNews) {
+                            } else if (screen.hasNews) {
                                 Badge()
                             }
                         }
                     ) {
                         Icon(
-                            imageVector = if (index == selectedItemIndex) {
-                                item.selectedIcon
-                            } else item.unselectedIcon,
-                            contentDescription = item.title
+                            imageVector = if (selected) {
+                                screen.selectedIcon
+                            } else screen.unselectedIcon,
+                            contentDescription = screen.title
                         )
                     }
                 }
