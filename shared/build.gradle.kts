@@ -66,6 +66,11 @@ kotlin {
                 // accompanist navigation animation
                 implementation ("com.google.accompanist:accompanist-navigation-animation:0.24.13-rc")
 
+                implementation ("androidx.compose.ui:ui:1.1.1")
+                implementation ("androidx.compose.material:material:1.1.1")
+                implementation ("androidx.compose.material3:material3:1.0.0-alpha12")
+                implementation ("androidx.compose.material3:material3-window-size-class:1.0.0-alpha12")
+
                 // Ktor
                 api(libs.ktor.client.okhttp)
 
