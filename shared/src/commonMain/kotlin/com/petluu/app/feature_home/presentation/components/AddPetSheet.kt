@@ -39,114 +39,108 @@ fun AddPetSheet(
     newPet: Pet?,
     isOpen: Boolean,
     onEvent: (HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAddPhotoClicked: () -> Unit
 ) {
-    BottomSheetFromWish(
-        visible = isOpen,
-        modifier = modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopStart
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopStart
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(Modifier.height(60.dp))
-                if (newPet?.photoBytes == null) {
-                    Box(
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(RoundedCornerShape(40))
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                            .clickable {
-                                onEvent(HomeEvent.OnAddPhotoClicked)
-                            }
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                shape = RoundedCornerShape(40)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Add,
-                            contentDescription = "Add photo",
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
-                } else {
-                    PetPhoto(
-                        pet = newPet,
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clickable {
-                                onEvent(HomeEvent.OnAddPhotoClicked)
-                            }
+            Spacer(Modifier.height(60.dp))
+            if (newPet?.photoBytes == null) {
+                Box(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(RoundedCornerShape(40))
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                        .clickable { onAddPhotoClicked() }
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            shape = RoundedCornerShape(40)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = "Add photo",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.size(40.dp)
                     )
                 }
-                Spacer(Spacing.Vertical.MD.heightModifier)
-                PetTextField(
-                    value = newPet?.name ?: "",
-                    placeholder = "Name",
-                    error = state.nameError,
-                    onValueChanged = {
-                        onEvent(HomeEvent.OnNameChanged(it))
-                    },
-                    modifier = Modifier.fillMaxWidth()
+            } else {
+                PetPhoto(
+                    pet = newPet,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clickable {
+                            onEvent(HomeEvent.OnAddPhotoClicked)
+                        }
                 )
-                Spacer(Spacing.Vertical.MD.heightModifier)
-                PetTextField(
-                    value = newPet?.species ?: "",
-                    placeholder = "Species",
-                    error = state.speciesError,
-                    onValueChanged = {
-                        onEvent(HomeEvent.OnSpeciesChanged(it))
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Spacing.Vertical.MD.heightModifier)
-                PetTextField(
-                    value = newPet?.breed ?: "",
-                    placeholder = "Breed",
-                    error = state.breedError,
-                    onValueChanged = {
-                        onEvent(HomeEvent.OnBreedChanged(it))
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Spacing.Vertical.MD.heightModifier)
-                //TODO change Gender to dropdown
-                PetTextField(
-                    value = newPet?.gender?.name?.capitalize() ?: "",
-                    placeholder = "Gender",
-                    error = null,
-                    onValueChanged = {
-                        onEvent(HomeEvent.OnGenderChanged(it))
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(16.dp))
-                Button(
-                    onClick = {
-                        onEvent(HomeEvent.SavePet)
-                    }
-                ) {
-                    Text(text = "Save")
-                }
             }
-            IconButton(
+            Spacer(Spacing.Vertical.MD.heightModifier)
+            PetTextField(
+                value = newPet?.name ?: "",
+                placeholder = "Name",
+                error = state.nameError,
+                onValueChanged = {
+                    onEvent(HomeEvent.OnNameChanged(it))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Spacing.Vertical.MD.heightModifier)
+            PetTextField(
+                value = newPet?.species ?: "",
+                placeholder = "Species",
+                error = state.speciesError,
+                onValueChanged = {
+                    onEvent(HomeEvent.OnSpeciesChanged(it))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Spacing.Vertical.MD.heightModifier)
+            PetTextField(
+                value = newPet?.breed ?: "",
+                placeholder = "Breed",
+                error = state.breedError,
+                onValueChanged = {
+                    onEvent(HomeEvent.OnBreedChanged(it))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Spacing.Vertical.MD.heightModifier)
+            //TODO change Gender to dropdown
+            PetTextField(
+                value = newPet?.gender?.name?.capitalize() ?: "",
+                placeholder = "Gender",
+                error = null,
+                onValueChanged = {
+                    onEvent(HomeEvent.OnGenderChanged(it))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(16.dp))
+            Button(
                 onClick = {
-                    onEvent(HomeEvent.DismissPet)
+                    onEvent(HomeEvent.SavePet)
                 }
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = "Close"
-                )
+                Text(text = "Save")
             }
+        }
+        IconButton(
+            onClick = {
+                onEvent(HomeEvent.DismissPet)
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = "Close"
+            )
         }
     }
 }

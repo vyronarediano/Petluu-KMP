@@ -54,10 +54,10 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun HomeScreen(
     state: HomeState,
-    newPet: Pet?,
     onEvent: (HomeEvent) -> Unit,
     imagePicker: ImagePicker,
-    onPetSelected: () -> Unit
+    onPetSelected: () -> Unit,
+    onAddNewPetClick: () -> Unit
 ) {
     imagePicker.registerPicker { imageBytes ->
         onEvent(HomeEvent.OnPhotoPicked(imageBytes))
@@ -77,25 +77,13 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 onEvent = onEvent,
                 state = state,
-                onPetSelected = onPetSelected
+                onPetSelected = onPetSelected,
+                onAddNewPetClick = onAddNewPetClick
             )
 
             Spacer(Spacing.Vertical.MD.heightModifier)
         }
     }
-
-    AddPetSheet(
-        state = state,
-        newPet = newPet,
-        isOpen = state.isAddPetSheetOpen,
-        onEvent = { event ->
-            if (event is HomeEvent.OnAddPhotoClicked) {
-                imagePicker.pickImage()
-            }
-            onEvent(event)
-        }
-    )
-
 }
 
 @Composable
@@ -128,14 +116,15 @@ private fun HomeContent(
     modifier: Modifier = Modifier,
     onEvent: (HomeEvent) -> Unit,
     state: HomeState,
-    onPetSelected: () -> Unit
+    onPetSelected: () -> Unit,
+    onAddNewPetClick: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
     ) {
         item {
             Column {
-                PetListSection(onEvent, modifier, state, onPetSelected)
+                PetListSection(onEvent, modifier, state, onPetSelected, onAddNewPetClick)
 
                 AddHeaderSection(
                     headerTitle = "To take",
@@ -165,11 +154,12 @@ private fun PetListSection(
     onEvent: (HomeEvent) -> Unit,
     modifier: Modifier,
     state: HomeState,
-    onPetSelected: () -> Unit
+    onPetSelected: () -> Unit,
+    onAddNewPetClick: () -> Unit
 ) {
     AddHeaderSection(
         headerTitle = "Your pets",
-        onAddClick = { onEvent(HomeEvent.OnAddNewPetClick) },
+        onAddClick = { onAddNewPetClick() },
         onSeeAllClick = {
             //TODO onEvent OnSeeAllClick
         }

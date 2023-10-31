@@ -9,6 +9,11 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,167 +38,204 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.petluu.app.core.presentation.ImagePicker
+import com.petluu.app.core.presentation.util.Dimens
 import com.petluu.app.feature_home.presentation.HomeScreen
 import com.petluu.app.feature_home.presentation.HomeVM
 import com.petluu.app.feature_home.presentation.PetDetailScreen
+import com.petluu.app.feature_home.presentation.components.AddPetSheet
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
+    ExperimentalMaterialApi::class
+)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
     val navController = rememberAnimatedNavController()
     val state by viewModel.state.collectAsState()
 
-    Scaffold(
-        bottomBar = { BottomNavigation(navController) }
-    ) { _ ->
-        AnimatedNavHost(
-            navController = navController,
-            startDestination = Screen.Home.route,
-        ) {
-            composable(
-                route = Screen.Home.route,
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        Screen.PetDetail.route ->
-                            slideInHorizontally(
-                                initialOffsetX = { 300 },
-                                animationSpec = tween(300)
-                            ) + fadeIn(animationSpec = tween(300))
+    val scope = rememberCoroutineScope()
+    val skipHalfExpanded by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
 
-                        else -> null
-                    }
-                },
-                exitTransition = {
-                    when (targetState.destination.route) {
-                        Screen.PetDetail.route ->
-                            slideOutHorizontally(
-                                targetOffsetX = { -300 },
-                                animationSpec = tween(300)
-                            ) + fadeOut(animationSpec = tween(300))
-
-                        else -> null
-                    }
-                },
-                popEnterTransition = {
-                    when (initialState.destination.route) {
-                        Screen.PetDetail.route ->
-                            slideInHorizontally(
-                                initialOffsetX = { -300 },
-                                animationSpec = tween(300)
-                            ) + fadeIn(animationSpec = tween(300))
-
-                        else -> null
-                    }
+    ModalBottomSheetLayout(
+        modifier = Modifier.fillMaxSize(),
+        sheetShape = RoundedCornerShape(
+            topEnd = Dimens.BottomSheet.bottomSheetRadius,
+            topStart = Dimens.BottomSheet.bottomSheetRadius
+        ),
+        sheetState = sheetState,
+        sheetContent = {
+            AddPetSheet(
+                state = state,
+                newPet = viewModel.newPet,
+                isOpen = state.isAddPetSheetOpen,
+                onEvent = viewModel::onEvent,
+                onAddPhotoClicked = {
+                    imagePicker.pickImage()
                 }
+            )
+        }
+    ) {
+        Scaffold(
+            bottomBar = { BottomNavigation(navController) }
+        ) { _ ->
+            AnimatedNavHost(
+                navController = navController,
+                startDestination = Screen.Home.route,
             ) {
-                HomeScreen(
-                    state = state,
-                    newPet = viewModel.newPet,
-                    imagePicker = imagePicker,
-                    onEvent = viewModel::onEvent,
-                    onPetSelected = {
-                        navController.navigate(Screen.PetDetail.route)
-                    }
-                )
-            }
-            composable(
-                route = Screen.PetDetail.route,
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        Screen.Home.route ->
-                            slideInHorizontally(
-                                initialOffsetX = { 300 },
-                                animationSpec = tween(300)
-                            ) + fadeIn(animationSpec = tween(300))
+                composable(
+                    route = Screen.Home.route,
+                    enterTransition = {
+                        when (initialState.destination.route) {
+                            Screen.PetDetail.route ->
+                                slideInHorizontally(
+                                    initialOffsetX = { 300 },
+                                    animationSpec = tween(300)
+                                ) + fadeIn(animationSpec = tween(300))
 
-                        else -> null
-                    }
-                },
-                exitTransition = {
-                    when (targetState.destination.route) {
-                        Screen.Home.route ->
-                            slideOutHorizontally(
-                                targetOffsetX = { -300 },
-                                animationSpec = tween(300)
-                            ) + fadeOut(animationSpec = tween(300))
-
-                        else -> null
-                    }
-                },
-                popExitTransition = {
-                    when (targetState.destination.route) {
-                        Screen.Home.route ->
-                            slideOutHorizontally(
-                                targetOffsetX = { 300 },
-                                animationSpec = tween(300)
-                            ) + fadeOut(animationSpec = tween(300))
-
-                        else -> null
-                    }
-                }
-            ) {
-                PetDetailScreen(
-                    viewModel = viewModel,
-                    onEditPetClick = {
-
+                            else -> null
+                        }
                     },
-                    onDeletePetClick = {
+                    exitTransition = {
+                        when (targetState.destination.route) {
+                            Screen.PetDetail.route ->
+                                slideOutHorizontally(
+                                    targetOffsetX = { -300 },
+                                    animationSpec = tween(300)
+                                ) + fadeOut(animationSpec = tween(300))
 
+                            else -> null
+                        }
                     },
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
+                    popEnterTransition = {
+                        when (initialState.destination.route) {
+                            Screen.PetDetail.route ->
+                                slideInHorizontally(
+                                    initialOffsetX = { -300 },
+                                    animationSpec = tween(300)
+                                ) + fadeIn(animationSpec = tween(300))
 
-            composable(
-                route = Screen.Settings.route,
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        Screen.Home.route ->
-                            slideInHorizontally(
-                                initialOffsetX = { 300 },
-                                animationSpec = tween(300)
-                            ) + fadeIn(animationSpec = tween(300))
-
-                        else -> null
+                            else -> null
+                        }
                     }
-                },
-                exitTransition = {
-                    when (targetState.destination.route) {
-                        Screen.Home.route ->
-                            slideOutHorizontally(
-                                targetOffsetX = { 300 },
-                                animationSpec = tween(300)
-                            ) + fadeOut(animationSpec = tween(300))
-
-                        else -> null
-                    }
-                },
-                popExitTransition = {
-                    when (targetState.destination.route) {
-                        Screen.Home.route ->
-                            slideOutHorizontally(
-                                targetOffsetX = { 300 },
-                                animationSpec = tween(300)
-                            ) + fadeOut(animationSpec = tween(300))
-
-                        else -> null
-                    }
-                }
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Settings screen here",
-                        style = MaterialTheme.typography.titleLarge
+                    HomeScreen(
+                        state = state,
+                        imagePicker = imagePicker,
+                        onEvent = viewModel::onEvent,
+                        onPetSelected = {
+                            navController.navigate(Screen.PetDetail.route)
+                        },
+                        onAddNewPetClick = {
+                            scope.launch {
+                                sheetState.show()
+                            }
+                        },
                     )
+
+                }
+                composable(
+                    route = Screen.PetDetail.route,
+                    enterTransition = {
+                        when (initialState.destination.route) {
+                            Screen.Home.route ->
+                                slideInHorizontally(
+                                    initialOffsetX = { 300 },
+                                    animationSpec = tween(300)
+                                ) + fadeIn(animationSpec = tween(300))
+
+                            else -> null
+                        }
+                    },
+                    exitTransition = {
+                        when (targetState.destination.route) {
+                            Screen.Home.route ->
+                                slideOutHorizontally(
+                                    targetOffsetX = { -300 },
+                                    animationSpec = tween(300)
+                                ) + fadeOut(animationSpec = tween(300))
+
+                            else -> null
+                        }
+                    },
+                    popExitTransition = {
+                        when (targetState.destination.route) {
+                            Screen.Home.route ->
+                                slideOutHorizontally(
+                                    targetOffsetX = { 300 },
+                                    animationSpec = tween(300)
+                                ) + fadeOut(animationSpec = tween(300))
+
+                            else -> null
+                        }
+                    }
+                ) {
+                    PetDetailScreen(
+                        viewModel = viewModel,
+                        onEditPetClick = {
+
+                        },
+                        onDeletePetClick = {
+
+                        },
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
+
+                composable(
+                    route = Screen.Settings.route,
+                    enterTransition = {
+                        when (initialState.destination.route) {
+                            Screen.Home.route ->
+                                slideInHorizontally(
+                                    initialOffsetX = { 300 },
+                                    animationSpec = tween(300)
+                                ) + fadeIn(animationSpec = tween(300))
+
+                            else -> null
+                        }
+                    },
+                    exitTransition = {
+                        when (targetState.destination.route) {
+                            Screen.Home.route ->
+                                slideOutHorizontally(
+                                    targetOffsetX = { 300 },
+                                    animationSpec = tween(300)
+                                ) + fadeOut(animationSpec = tween(300))
+
+                            else -> null
+                        }
+                    },
+                    popExitTransition = {
+                        when (targetState.destination.route) {
+                            Screen.Home.route ->
+                                slideOutHorizontally(
+                                    targetOffsetX = { 300 },
+                                    animationSpec = tween(300)
+                                ) + fadeOut(animationSpec = tween(300))
+
+                            else -> null
+                        }
+                    }
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Settings screen here",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
                 }
             }
         }
     }
-
 
 }
 
@@ -205,7 +249,7 @@ fun BottomNavigation(navController: NavController) {
     var selectedItemIndex by rememberSaveable {
         mutableStateOf(0)
     }
-    NavigationBar() {
+    NavigationBar {
         navigationItems.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
