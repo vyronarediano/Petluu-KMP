@@ -32,8 +32,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -93,6 +96,7 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
                 navController = navController,
                 startDestination = Screen.Home.route,
             ) {
+                //region HOME ROUTE
                 composable(
                     route = Screen.Home.route,
                     enterTransition = {
@@ -143,56 +147,10 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
                             }
                         },
                     )
-
                 }
-                composable(
-                    route = Screen.PetDetail.route,
-                    enterTransition = {
-                        when (initialState.destination.route) {
-                            Screen.Home.route ->
-                                slideInHorizontally(
-                                    initialOffsetX = { 300 },
-                                    animationSpec = tween(300)
-                                ) + fadeIn(animationSpec = tween(300))
+                //endregion HOME ROUTE
 
-                            else -> null
-                        }
-                    },
-                    exitTransition = {
-                        when (targetState.destination.route) {
-                            Screen.Home.route ->
-                                slideOutHorizontally(
-                                    targetOffsetX = { -300 },
-                                    animationSpec = tween(300)
-                                ) + fadeOut(animationSpec = tween(300))
-
-                            else -> null
-                        }
-                    },
-                    popExitTransition = {
-                        when (targetState.destination.route) {
-                            Screen.Home.route ->
-                                slideOutHorizontally(
-                                    targetOffsetX = { 300 },
-                                    animationSpec = tween(300)
-                                ) + fadeOut(animationSpec = tween(300))
-
-                            else -> null
-                        }
-                    }
-                ) {
-                    PetDetailScreen(
-                        viewModel = viewModel,
-                        onEditPetClick = {
-
-                        },
-                        onDeletePetClick = {
-
-                        },
-                        onBackClick = { navController.navigateUp() }
-                    )
-                }
-
+                //region SETTINGS ROUTE
                 composable(
                     route = Screen.Settings.route,
                     enterTransition = {
@@ -239,10 +197,73 @@ actual fun PetluuNavigation(viewModel: HomeVM, imagePicker: ImagePicker) {
                         )
                     }
                 }
+                //endregion SETTINGS ROUTE
+
+                petDetailsNavGraph(navController, viewModel)
             }
         }
     }
+}
 
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.petDetailsNavGraph(
+    navController: NavHostController,
+    viewModel: HomeVM
+) {
+    navigation(
+        route = Graph.PET_DETAILS,
+        startDestination = Screen.PetDetail.route
+    ) {
+        //region PET DETAIL ROUTE
+        composable(
+            route = Screen.PetDetail.route,
+            enterTransition = {
+                when (initialState.destination.route) {
+                    Screen.Home.route ->
+                        slideInHorizontally(
+                            initialOffsetX = { 300 },
+                            animationSpec = tween(300)
+                        ) + fadeIn(animationSpec = tween(300))
+
+                    else -> null
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    Screen.Home.route ->
+                        slideOutHorizontally(
+                            targetOffsetX = { -300 },
+                            animationSpec = tween(300)
+                        ) + fadeOut(animationSpec = tween(300))
+
+                    else -> null
+                }
+            },
+            popExitTransition = {
+                when (targetState.destination.route) {
+                    Screen.Home.route ->
+                        slideOutHorizontally(
+                            targetOffsetX = { 300 },
+                            animationSpec = tween(300)
+                        ) + fadeOut(animationSpec = tween(300))
+
+                    else -> null
+                }
+            }
+        ) {
+            PetDetailScreen(
+                viewModel = viewModel,
+                onEditPetClick = {
+
+                },
+                onDeletePetClick = {
+
+                },
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+        //endregion PET DETAIL ROUTE
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
