@@ -71,7 +71,7 @@ fun PetDetailScreen(
                             Column {
                                 PetCoverPhoto(
                                     modifier = Modifier.height(140.dp).fillMaxWidth(),
-                                    pet = selectedPet,
+                                    pet = pet,
                                     backgroundEmptyColor = MaterialTheme.colorScheme.outline,
                                     iconSize = 50.dp
                                 )
@@ -93,7 +93,7 @@ fun PetDetailScreen(
 
                             Box(modifier = Modifier.padding(top = 100.dp)) {
                                 PetPhoto(
-                                    pet = selectedPet,
+                                    pet = pet,
                                     iconSize = 50.dp,
                                     modifier = Modifier
                                         .padding(start = Padding.Horizontal.MD)
@@ -116,11 +116,11 @@ fun PetDetailScreen(
 
                     Row(
                         modifier = Modifier.fillMaxWidth()
-                            .padding(horizontal = Padding.Horizontal.XS),
+                            .padding(horizontal = Padding.Horizontal.MD),
                         horizontalArrangement = Arrangement.spacedBy(Spacing.Horizontal.MD),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        PetInfo(
+                        PetInfoVerticalItem(
                             modifier = Modifier.weight(1f),
                             petInfoValue = "6 years",
                             helperLabel = "Age"
@@ -128,16 +128,36 @@ fun PetDetailScreen(
 
                         //TODO Harcoded for now
                         val unitsOfWeight = listOf("lg", "kg")
-                        PetInfo(
+                        PetInfoVerticalItem(
                             modifier = Modifier.weight(1f),
                             petInfoValue = "${pet.weight} ${unitsOfWeight.first()}",
                             helperLabel = "Weight"
                         )
-                        PetInfo(
+                        PetInfoVerticalItem(
                             modifier = Modifier.weight(1f),
                             petInfoValue = pet.gender?.name?.lowercase()?.capitalize().orEmpty(),
                             helperLabel = "Gender"
                         )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Padding.Horizontal.MD)
+                            .clip(
+                                RoundedCornerShape(Dimens.RoundedCornerRadius.large)
+                            )
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .height(200.dp),
+                        verticalArrangement = Arrangement.spacedBy(Padding.Vertical.SM)
+
+                    ) {
+                        Spacer(Spacing.Vertical.MD.heightModifier)
+
+                        PetInfoHorizontalItem("Birthday", "May 18, 2020")
+                        PetInfoHorizontalItem("Color", "Golden")
+                        PetInfoHorizontalItem("Microchip Number", "104HD9393")
+
                     }
                 }
 
@@ -147,7 +167,32 @@ fun PetDetailScreen(
 }
 
 @Composable
-private fun PetInfo(
+private fun PetInfoHorizontalItem(helperLabel: String, petInfoValue: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = Padding.Horizontal.MD),
+        horizontalArrangement = Arrangement.spacedBy(
+            20.dp,
+            Alignment.CenterHorizontally
+        )
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = helperLabel,
+            color = MaterialTheme.colorScheme.outline,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = petInfoValue,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
+private fun PetInfoVerticalItem(
     modifier: Modifier = Modifier,
     petInfoValue: String,
     helperLabel: String
@@ -168,7 +213,7 @@ private fun PetInfo(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontSize = 18.sp
+                style = MaterialTheme.typography.titleMedium
             )
 
             Spacer(Spacing.Vertical.SM.heightModifier)
@@ -178,7 +223,7 @@ private fun PetInfo(
                 text = helperLabel,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontSize = 12.sp
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
@@ -240,7 +285,8 @@ fun PetDetailTopAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.ArrowBackIos,
-                    contentDescription = "Back icon"
+                    contentDescription = "Back icon",
+                    tint = Color.White
                 )
             }
         },
